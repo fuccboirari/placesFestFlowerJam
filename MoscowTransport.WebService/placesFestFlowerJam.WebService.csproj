@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="MoscowTransport.WebService.csproj" />
-    <None Include="MoscowTransport.WebService.csproj.user" />
+    <None Include="FestFlowerJam.csproj" />
+    <None Include="FestFlowerJam.csproj.user" />
   </ItemGroup>
 
   <ItemGroup>
