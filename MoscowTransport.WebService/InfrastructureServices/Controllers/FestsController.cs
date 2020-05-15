@@ -32,7 +32,7 @@ namespace placesFestFlowerJam.WebService.InfrastructureServices.Controllers
                     NumberTP = "25",
                     WorkWeekdays = "11-21",
                     WorkWeekend = "10-22",
-                    Fests = new Fest()
+                    FestFJ = new Fest()
                     {
                         Id = 1,
                         Name = "Цветочный Джем",

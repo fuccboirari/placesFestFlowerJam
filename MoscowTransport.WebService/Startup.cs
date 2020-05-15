@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using placesFestFlowerJam.InfrastructureServices.Gateways.Database;
+using Microsoft.EntityFrameworkCore;
+using placesFestFlowerJam.ApplicationServices.Ports.Gateways.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using placesFestFlowerJam.ApplicationServices.GetFestListUseCase;
 using placesFestFlowerJam.ApplicationServices.Repositories;
 using placesFestFlowerJam.DomainObjects.Ports;
-using placesFestFlowerJam.DomainObjects;
-using System.Collections.Generic;
+
 
 namespace placesFestFlowerJam.WebService
 {
@@ -22,49 +24,21 @@ namespace placesFestFlowerJam.WebService
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            services.AddScoped<InMemoryFestRepository>(x => new InMemoryFestRepository(
-                new List<Fest> {
-                    new Fest() 
-                    { 
-                        Id = 1, 
-                        Address = "v.31313", 
-                        NumberTP = "591", 
-                        WorkWeekdays = "10-21",
-                        WorkWeekend = "9-19",
-                        Organization = x.GetRequiredService<InMemoryFestFJRepository>().GetFestFJ(2).Result
-                    },
-                    new Fest()
-                    {
-                        Id = 2,
-                        Address = "v.55",
-                        NumberTP = "113",
-                        WorkWeekdays = "11-21",
-                        WorkWeekend = "9-20",
-                        Organization = x.GetRequiredService<InMemoryFestFJRepository>().GetFestFJ(2).Result
-                    },
-                    new Fest()
-                    {
-                        Id = 3,
-                        Address = "v.33",
-                        NumberTP = "12",
-                        WorkWeekdays = "12-21",
-                        WorkWeekend = "11-18",
-                        Organization = x.GetRequiredService<InMemoryFestFJRepository>().GetFestFJ(1).Result
-                    }
-            }));
-            services.AddScoped<IReadOnlyFestRepository>(x => x.GetRequiredService<InMemoryFestRepository>());
-            services.AddScoped<IFestRepository>(x => x.GetRequiredService<InMemoryFestRepository>());
+        {
+            services.AddDbContext<PlacesContext>(opts =>
+                opts.UseSqlite($"Filename={System.IO.Path.Combine(System.Environment.CurrentDirectory, "placesFestFlowerJam.db")}")
+            );
 
-            services.AddScoped<InMemoryFestFJRepository>(x => new InMemoryFestFJRepository(
-                new List<FestFJ> { 
-                    new FestFJ() { Id = 1, Name = "Цветочный Джем", TimeZone = "Moscow/Europe", WebSite = "http://data.mos.ru" },
-                    new FestFJ() { Id = 2, Name = "Цветочный Джем", TimeZone = "Moscow/Europe", WebSite = "http://data.mos.ru" } 
-                }
-            ));
-            services.AddScoped<IReadOnlyFestFJRepository>(x => x.GetRequiredService<InMemoryFestFJRepository>());
-            services.AddScoped<IFestFJRepository>(x => x.GetRequiredService<InMemoryFestFJRepository>());
+            services.AddScoped<IPlacesDatabaseGateway, PlacesEFSqliteGateway>();
 
+            services.AddScoped<DbFestRepository>();
+            services.AddScoped<IReadOnlyFestRepository>(x => x.GetRequiredService<DbFestRepository>());
+            services.AddScoped<IFestRepository>(x => x.GetRequiredService<DbFestRepository>());
+
+            services.AddScoped<DbFestFJRepository>();
+            services.AddScoped<IReadOnlyFestFJRepository>(x => x.GetRequiredService<DbFestFJRepository>());
+            services.AddScoped<IFestFJRepository>(x => x.GetRequiredService<DbFestFJRepository>());
+             
             services.AddScoped<IGetFestListUseCase, GetFestListUseCase>();
                         
             services.AddControllers();
