@@ -7,14 +7,14 @@ using System.Text;
 
 namespace placesFestFlowerJam.ApplicationServices.GetFestListUseCase
 {
-    public class FestCriteria : ICriteria <Fest>
+    public class FestFJCriteria : ICriteria<Fest>
     {
-        public long FestId { get; }
+        public long FestFJId { get; }
 
-        public FestCriteria(long festId)
-            => FestId = festId;
+        public FestFJCriteria(long festFJId)
+            => FestFJId = festFJId;
 
         public Expression<Func<Fest, bool>> Filter
-            => (r => r.FestId.Id == FestId);
+            => (r => r.Organization.Id == FestFJId);
     }
 }
